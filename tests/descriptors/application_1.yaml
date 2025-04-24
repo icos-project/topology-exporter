@@ -1,0 +1,4 @@
+name: app_1
+components:
+  - name: app_component_1
+  - name: app_component_2

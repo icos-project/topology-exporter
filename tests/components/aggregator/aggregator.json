@@ -1,0 +1,19 @@
+{
+	"cluster": {
+		"cluster": {
+			"node": {
+				"node": {
+					"pod": {
+						"pod": {
+							"workload": {
+								"app_instance": {
+									"icos_app_component": "app_component"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}

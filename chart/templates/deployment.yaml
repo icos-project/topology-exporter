@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "topology-exporter.fullname" . }}
+  labels:
+    {{- include "topology-exporter.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "topology-exporter.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "topology-exporter.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+          {{- if .Values.general.ZenohEP }}
+          - name: ZENOH_EP
+            value: {{ tpl .Values.general.ZenohEP . | quote }}
+          {{- end }}
+          {{- if .Values.general.AggURL }}
+          - name: AGG_URL
+            value: {{ tpl .Values.general.AggURL . | quote }}
+          {{- end }}
+          {{- if .Values.general.Interval }}
+          - name: INTERVAL
+            value: {{ tpl .Values.general.Interval . | quote }}
+          {{- end }}
+          {{- if .Values.general.AuthEnabled }}
+          - name: AUTH_ENABLED
+            value: {{ tpl .Values.general.AuthEnabled . | quote }}
+          {{- end }}
+          {{- if .Values.auth.ICOSCert }}
+          - name: ICOS_CERT
+            value: {{ tpl .Values.auth.ICOSCert . | quote }}
+          {{- end }}
+          {{- if .Values.auth.PermRegister }}
+          - name: PERM_REGISTER
+            value: {{ tpl .Values.auth.PermRegister . | quote }}
+          {{- end }}
+          {{- if .Values.auth.PermRead }}
+          - name: PERM_READ
+            value: {{ tpl .Values.auth.PermRead . | quote }}
+          {{- end }}
+          {{- if .Values.auth.IAMURL }}
+          - name: IAM_URL
+            value: {{ tpl .Values.auth.IAMURL . | quote }}
+          {{- end }}
+          {{- if .Values.auth.IAMRealm }}
+          - name: IAM_REALM
+            value: {{ tpl .Values.auth.IAMRealm . | quote }}
+          {{- end }}
+          {{- if .Values.auth.IAMId }}
+          - name: IAM_ID
+            value: {{ tpl .Values.auth.IAMId . | quote }}
+          {{- end }}
+          {{- if .Values.auth.IAMSecret }}
+          - name: IAM_SECRET
+            value: {{ tpl .Values.auth.IAMSecret . | quote }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http

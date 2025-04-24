@@ -1,0 +1,78 @@
+{
+	"cluster": {
+		"cluster-1": {
+			"node": {
+				"node.1": {
+					"pod": {
+						"application_1.1-1": {
+							"workload": {
+								"app_instance_1": {
+									"icos_app_component": "app_component_1"
+								}
+							}
+						},
+						"application_2.1-1": {
+							"workload": {
+								"app_instance_2": {
+									"icos_app_component": "app_component_1"
+								}
+							}
+						}
+					}
+				},
+				"node.2": {
+					"pod": {
+						"application_1.2-1": {
+							"workload": {
+								"app_instance_1": {
+									"icos_app_component": "app_component_2"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"cluster-2": {
+			"node": {
+				"node.1": {
+					"pod": {
+						"application_2.1-2": {
+							"workload": {
+								"app_instance_2": {
+									"icos_app_component": "app_component_1"
+								}
+							}
+						}
+					}
+				},
+				"node.2": {
+					"pod": {
+						"application_1.2-2": {
+							"workload": {
+								"app_instance_1": {
+									"icos_app_component": "app_component_2"
+								}
+							}
+						}
+					}
+				}
+			}
+		},
+		"cluster-3": {
+			"node": {
+				"node.1": {
+					"pod": {
+						"application_2.1-3": {
+							"workload": {
+								"app_instance_2": {
+									"icos_app_component": "app_component_1"
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}

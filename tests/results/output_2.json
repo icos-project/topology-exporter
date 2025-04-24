@@ -1,0 +1,11 @@
+{
+    "cluster-1": [
+        "application_2.1-1"
+    ],
+    "cluster-2": [
+        "application_2.1-2"
+    ],
+    "cluster-3": [
+        "application_2.1-3"
+    ]
+}

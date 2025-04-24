@@ -1,0 +1,107 @@
+# This Docker Compose configuration file defines a set of services to be deployed in a network named "continuum".
+# The services include:
+#     Zenoh: A service running the Zenoh router, listening on port 7447.
+#     Aggregator: A service running a mock version of the Aggregator ICOS Component on port 8000, reading the topology from a file mounted as a volume.
+#     Application: Several services running application instance components, connected to the Zenoh router service.
+#     Topology Exporter: A service named "Topology Exporter" configured to run on port 80, with environment variables specifying connection details to the Zenoh router service and the Aggregator endpoint.
+
+# Definition of named networks
+networks:
+  continuum:
+    name: continuum
+
+# Services configuration
+services:
+
+  # Zenoh service
+  zenoh:
+    image: eclipse/zenoh:1.2.1
+    restart: unless-stopped
+    networks:
+      - continuum
+    ports:
+      - 7447:7447
+
+  # Aggregator
+  aggregator:
+    image: icos/aggregator_mock
+    build: ./components/aggregator
+    networks:
+      - continuum
+    ports:
+      - 8000:8000
+    volumes:
+      - ./components/aggregator/aggregator.json:/app/aggregator.json:ro
+
+  # Application instance component
+  application:
+    image: icos/application_mock
+    build: ./components/application
+    deploy:
+      replicas: 1
+    depends_on:
+      zenoh:
+        condition: service_started
+    networks:
+      - continuum
+
+  # Application instance component 1.1
+  application_1.1:
+    image: icos/application_mock
+    build: ./components/application
+    deploy:
+      replicas: 1
+    depends_on:
+      zenoh:
+        condition: service_started
+    environment:
+      - INST_COMP=app_instance_1/app_component_1
+    networks:
+      - continuum
+
+  # Application instance component 1.2
+  application_1.2:
+    image: icos/application_mock
+    build: ./components/application
+    deploy:
+      replicas: 2
+    depends_on:
+      zenoh:
+        condition: service_started
+    environment:
+      - INST_COMP=app_instance_1/app_component_2
+    networks:
+      - continuum
+
+  # Application instance component 2.1
+  application_2.1:
+    image: icos/application_mock
+    build: ./components/application
+    deploy:
+      replicas: 3
+    depends_on:
+      zenoh:
+        condition: service_started
+    environment:
+      - INST_COMP=app_instance_2/app_component_1
+    networks:
+      - continuum
+
+  # Topology Exporter
+  topology_exporter:
+    image: icos/topology_exporter:2.0
+    build: ..
+    depends_on:
+      zenoh:
+        condition: service_started
+      aggregator:
+        condition: service_healthy
+    environment:
+      - AUTH_ENABLED=False
+      - ZENOH_EP=tcp/zenoh:7447
+      - AGG_URL=http://aggregator:8000
+      - INTERVAL=${INTERVAL:-1}
+    networks:
+      - continuum
+    ports:
+      - 80:80
