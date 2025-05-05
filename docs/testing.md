@@ -1,6 +1,6 @@
 # Testing and validation
 
-The Topology Exporter component contains several [unit tests](https://github.com/icos-project/topology-exporter/tree/main/tests/) to verify its proper behavior. To facilitate the verification of the component, the other component of the Meta-kernel layer on which the Topology Exporter depends (Aggregator) has been mocked and a new service that is able to return a pre-made topology has been developed. Upon a query for the status of the infrastructure, this mocked aggregator reads the desired status of the testbed from a file; therefore, by dynamically changing the content of the file, we can simulate the status of the infrastructure.
+The Topology Exporter component contains several [unit tests](https://github.com/icos-project/topology-exporter/tree/release/tests/) to verify its proper behavior. To facilitate the verification of the component, the other component of the Meta-kernel layer on which the Topology Exporter depends (Aggregator) has been mocked and a new service that is able to return a pre-made topology has been developed. Upon a query for the status of the infrastructure, this mocked aggregator reads the desired status of the testbed from a file; therefore, by dynamically changing the content of the file, we can simulate the status of the infrastructure.
 
 The unit tests for the component starts a docker compose that starts and creates several containers:
 

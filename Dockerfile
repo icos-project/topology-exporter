@@ -24,6 +24,7 @@ WORKDIR /app
 
 # Copy application files
 COPY src /app
+COPY icos-certificate.crt /etc/ssl/certs/icos-extra-certs.crt
 
 # Expose ports
 EXPOSE 80

@@ -32,8 +32,8 @@ from time import sleep
 from threading import TIMEOUT_MAX
 
 # Retrieving environment variables
-ZENOH_EP = os.environ.get("ZENOH_EP", "tcp/zenoh:7447")
-INST_COMP = os.environ.get("INST_COMP", "app_instance/component")
+ZENOH_EP = os.environ["ZENOH_EP"]
+INST_COMP = os.environ["INST_COMP"]
 
 # Setting up Zenoh configuration
 conf = zenoh.Config()

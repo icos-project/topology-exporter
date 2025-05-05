@@ -30,7 +30,7 @@ import zenoh
 import json
 
 # Retrieving environment variables
-ZENOH_EP = os.environ.get("ZENOH_EP", "tcp/zenoh-local.default:7447")
+ZENOH_EP = os.environ["ZENOH_EP"]
 
 # Setting up Zenoh configuration
 conf = zenoh.Config()

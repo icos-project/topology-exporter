@@ -30,13 +30,10 @@ from keycloak import KeycloakOpenID
 from time import time
 
 # Retrieving environment variables
-IAM_URL = os.environ.get(
-    "IAM_URL", "https://iam.core.icos-staging.10-160-3-151.sslip.io"
-)
-IAM_REALM = os.environ.get("IAM_REALM", "staging-continuum")
-IAM_ID = os.environ.get("IAM_ID", "contrl-1.topology-exporter")
-IAM_SECRET = os.environ.get("IAM_SECRET", "ZTTtUaZzoaIDhiML3qRGJ0YkOP0FeFCi")
-ICOS_CERT = os.environ.get("ICOS_CERT", "icos-certificate.crt")
+IAM_URL = os.environ["IAM_URL"]
+IAM_REALM = os.environ["IAM_REALM"]
+IAM_ID = os.environ["IAM_ID"]
+IAM_SECRET = os.environ["IAM_SECRET"]
 INTERVAL = float(os.environ.get("INTERVAL", "10"))
 
 # Initializing Keycloak OpenID
@@ -45,7 +42,7 @@ keycloak_openid = KeycloakOpenID(
     realm_name=IAM_REALM,
     client_id=IAM_ID,
     client_secret_key=IAM_SECRET,
-    verify=ICOS_CERT,
+    verify="/etc/ssl/certs/icos-extra-certs.crt",
 )
 
 # Initializing expire time

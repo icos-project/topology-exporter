@@ -42,6 +42,9 @@ services:
     depends_on:
       zenoh:
         condition: service_started
+    environment:
+      - ZENOH_EP=tcp/zenoh:7447
+      - INST_COMP=app_instance/app_component
     networks:
       - continuum
 
@@ -55,6 +58,7 @@ services:
       zenoh:
         condition: service_started
     environment:
+      - ZENOH_EP=tcp/zenoh:7447
       - INST_COMP=app_instance_1/app_component_1
     networks:
       - continuum
@@ -69,6 +73,7 @@ services:
       zenoh:
         condition: service_started
     environment:
+      - ZENOH_EP=tcp/zenoh:7447
       - INST_COMP=app_instance_1/app_component_2
     networks:
       - continuum
@@ -83,6 +88,7 @@ services:
       zenoh:
         condition: service_started
     environment:
+      - ZENOH_EP=tcp/zenoh:7447
       - INST_COMP=app_instance_2/app_component_1
     networks:
       - continuum
@@ -97,10 +103,10 @@ services:
       aggregator:
         condition: service_healthy
     environment:
-      - AUTH_ENABLED=False
       - ZENOH_EP=tcp/zenoh:7447
       - AGG_URL=http://aggregator:8000
       - INTERVAL=${INTERVAL:-1}
+      - AUTH_ENABLED=False
     networks:
       - continuum
     ports:

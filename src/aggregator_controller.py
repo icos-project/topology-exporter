@@ -36,7 +36,7 @@ AUTH_ENABLED = os.environ.get("AUTH_ENABLED", "True").lower() not in [
     "no",
     "0",
 ]
-AGG_URL = os.environ.get("AGG_URL", "http://10.160.3.20:30400")
+AGG_URL = os.environ["AGG_URL"]
 
 if AUTH_ENABLED:
     from keycloak_client import get_token

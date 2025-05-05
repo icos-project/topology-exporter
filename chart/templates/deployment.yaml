@@ -21,6 +21,16 @@ spec:
         {{- toYaml . | nindent 8 }}
         {{- end }}
     spec:
+      {{- with .Values.imagePullSecrets | default .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        {{- if (tpl .Values.extraCertsBundle.configmapName .) }}
+        - configMap:
+            name: {{ tpl .Values.extraCertsBundle.configmapName . }}
+          name: extra-certs-bundle
+        {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -41,10 +51,6 @@ spec:
           {{- if .Values.general.AuthEnabled }}
           - name: AUTH_ENABLED
             value: {{ tpl .Values.general.AuthEnabled . | quote }}
-          {{- end }}
-          {{- if .Values.auth.ICOSCert }}
-          - name: ICOS_CERT
-            value: {{ tpl .Values.auth.ICOSCert . | quote }}
           {{- end }}
           {{- if .Values.auth.PermRegister }}
           - name: PERM_REGISTER
@@ -70,6 +76,12 @@ spec:
           - name: IAM_SECRET
             value: {{ tpl .Values.auth.IAMSecret . | quote }}
           {{- end }}
+          volumeMounts:
+            {{- if (tpl .Values.extraCertsBundle.configmapName .) }}
+            - mountPath: /etc/ssl/certs/icos-extra-certs.crt
+              name: extra-certs-bundle
+              subPath: {{ tpl .Values.extraCertsBundle.configmapKey . }}
+            {{- end }}
           ports:
             - name: http
               containerPort: 80

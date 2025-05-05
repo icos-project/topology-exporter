@@ -41,19 +41,22 @@ service:
   port: 80
 
 general:
-  ZenohEP: tcp/zenoh-local.default:7447
-  AggURL: http://10.160.3.20:30400
+  ZenohEP: <zenoh_endpoint>
+  AggURL: <aggregator_url>
   Interval: "10"
   AuthEnabled: "True"
 
 auth:
-  ICOSCert: icos-certificate.crt
-  PermRegister: app#Register
-  PermRead: app#Read
-  IAMURL: https://iam.core.icos-staging.10-160-3-151.sslip.io
-  IAMRealm: staging-continuum
-  IAMId: contrl-1.topology-exporter
-  IAMSecret: contrl-1.topology-exporter
+  PermRegister: "app#Register"
+  PermRead: "app#Read"
+  IAMURL: <server_url>
+  IAMRealm: <realm_name>
+  IAMId: <client_id>
+  IAMSecret: <client_secret_key>
+
+extraCertsBundle:
+  configmapName: ""
+  configmapKey: ""
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
