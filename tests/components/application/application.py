@@ -15,7 +15,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
-#  This work has received funding from the European Union's HORIZON research 
+#  This work has received funding from the European Union's HORIZON research
 #  and innovation programme under grant agreement No. 101070177.
 #
 # -*- coding: utf-8 -*-
@@ -28,12 +28,12 @@ Application Instance Component mock
 import os
 import json
 import zenoh
-from time import sleep
-from threading import TIMEOUT_MAX
+from signal import pause
 
 # Retrieving environment variables
 ZENOH_EP = os.environ["ZENOH_EP"]
-INST_COMP = os.environ["INST_COMP"]
+ICOS_APP_INSTANCE = os.environ["ICOS_APP_INSTANCE"]
+ICOS_APP_COMPONENT = os.environ["ICOS_APP_COMPONENT"]
 
 # Setting up Zenoh configuration
 conf = zenoh.Config()
@@ -55,10 +55,14 @@ def listener(sample):
 
 # Listening Application Instance Component messages from Zenoh bus
 if __name__ == "__main__":
-    sub = session.declare_subscriber(key_expr=INST_COMP, handler=listener)
+    sub = session.declare_subscriber(
+        key_expr=ICOS_APP_INSTANCE + "/" + ICOS_APP_COMPONENT, handler=listener
+    )
 
-    while True:
-        sleep(TIMEOUT_MAX)
+    try:
+        pause()
+    except KeyboardInterrupt:
+        pass
 
     sub.undeclare()
     session.close()

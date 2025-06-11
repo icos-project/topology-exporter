@@ -10,8 +10,8 @@ The language used for implementing the Topology Exporter component is Python, an
 
 Brief description of the modules that make up the Topology Exporter architecture:
 
-- **Topology Exporter**: contains the main class that is responsible of polling the Aggregator and sending the locations of each monitored application instance components through the Zenoh bus.
+- **Topology Exporter**: contains the main class that is responsible of polling the Aggregator and sending the deployment information of each monitored application instance components through the Zenoh bus.
 - **FastAPI Server**: defines a REST API for starting and stopping monitoring application instances and listing them all.
 - **Aggregator Controller**: requests the Aggregator for the whole deployment topology and parses their response.
-- **Zenoh Client**: puts into Zenoh bus the location of the pods of an application instance component.
+- **Zenoh Client**: puts into Zenoh bus the deployment information of the pods of an application instance component.
 - **Keycloak Client**: manage the authentication of the component and the verification of user tokens inside the ecosystem.

@@ -1,5 +1,14 @@
 {
-    "cluster-1": [
-        "application_1.2-1"
-    ]
+    "application": "app_1",
+    "clusters": {
+        "-1": {
+            "name": "cluster-1",
+            "pods": {
+                "_1.2-1": {
+                    "name": "pod_1.2-1",
+                    "ip": "ip_1.2-1"
+                }
+            }
+        }
+    }
 }

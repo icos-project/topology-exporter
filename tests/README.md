@@ -5,8 +5,8 @@ This folder contains all the necessary scripts and source code for testing the f
 The respository is organized in 4 main directories:
 
 - `components/`: folder containing the mocks for other components:
-    - **Aggregator**: expose the content of a JSON file to a REST API path.
-    - **Application**: subscribes to an application instance component Zenoh key and prints what receives to the standard output.
+    - **Aggregator**: expose the content of the `aggregator.json` file to a REST API path.
+    - **Application**: subscribes to an `ICOS_APP_INSTANCE/ICOS_APP_COMPONENT` Zenoh key and prints what receives to the standard output.
 - `descriptors/`: application descriptor YAMLs used for the tests.
 - `topologies/`: deployment topologies for the Aggregator used for the tests.
 - `results/`: expected outputs from the different application instance component pods of the tests.

@@ -33,7 +33,8 @@ The container offers several environment variables to configure the component ge
 - **ZENOH_EP**: Zenoh endpoint where to publish the topology of the applications.  
 - **AGG_URL**: Aggregator address where to query topology data.  
 - **INTERVAL**: time lapse in seconds between topology updates (*default*: `10`).  
-- **AUTH_ENABLED**: enable authentication and authorizarion (*default*: `True`).  
+- **LOG_LEVEL**: level of logging (*options*: `debug`, `info`, `warning`, `error`, `critical`; *default*: `warning`).  
+- **AUTH_ENABLED**: enable authentication and authorizarion (*options*: `True`, `False`; *default*: `True`).  
 
 When authentication and authorizarion are enabled, other environment variables come into play:
 

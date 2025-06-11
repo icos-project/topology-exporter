@@ -45,8 +45,8 @@ conf.insert_json5("connect/endpoints", json.dumps([ZENOH_EP]))
 session = zenoh.open(conf)
 
 
-def send(app_instance: str, app_component: str, clusters):
-    """Send through Zenoh bus the clusters where the app_component pods of app_instance were deployed."""
+def send(app_instance: str, app_component: str, deployment):
+    """Send through Zenoh bus the deployment information of the app_component pods of app_instance."""
     session.put(
-        key_expr=app_instance + "/" + app_component, payload=json.dumps(clusters)
+        key_expr=app_instance + "/" + app_component, payload=json.dumps(deployment)
     )

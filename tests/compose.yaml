@@ -16,6 +16,7 @@ services:
   # Zenoh service
   zenoh:
     image: eclipse/zenoh:1.2.1
+    init: true
     restart: unless-stopped
     networks:
       - continuum
@@ -37,6 +38,7 @@ services:
   application:
     image: icos/application_mock
     build: ./components/application
+    stop_signal: SIGINT
     deploy:
       replicas: 1
     depends_on:
@@ -44,7 +46,8 @@ services:
         condition: service_started
     environment:
       - ZENOH_EP=tcp/zenoh:7447
-      - INST_COMP=app_instance/app_component
+      - ICOS_APP_INSTANCE=app_instance
+      - ICOS_APP_COMPONENT=app_component
     networks:
       - continuum
 
@@ -52,6 +55,7 @@ services:
   application_1.1:
     image: icos/application_mock
     build: ./components/application
+    stop_signal: SIGINT
     deploy:
       replicas: 1
     depends_on:
@@ -59,7 +63,8 @@ services:
         condition: service_started
     environment:
       - ZENOH_EP=tcp/zenoh:7447
-      - INST_COMP=app_instance_1/app_component_1
+      - ICOS_APP_INSTANCE=app_instance_1
+      - ICOS_APP_COMPONENT=app_component_1
     networks:
       - continuum
 
@@ -67,6 +72,7 @@ services:
   application_1.2:
     image: icos/application_mock
     build: ./components/application
+    stop_signal: SIGINT
     deploy:
       replicas: 2
     depends_on:
@@ -74,7 +80,8 @@ services:
         condition: service_started
     environment:
       - ZENOH_EP=tcp/zenoh:7447
-      - INST_COMP=app_instance_1/app_component_2
+      - ICOS_APP_INSTANCE=app_instance_1
+      - ICOS_APP_COMPONENT=app_component_2
     networks:
       - continuum
 
@@ -82,6 +89,7 @@ services:
   application_2.1:
     image: icos/application_mock
     build: ./components/application
+    stop_signal: SIGINT
     deploy:
       replicas: 3
     depends_on:
@@ -89,13 +97,14 @@ services:
         condition: service_started
     environment:
       - ZENOH_EP=tcp/zenoh:7447
-      - INST_COMP=app_instance_2/app_component_1
+      - ICOS_APP_INSTANCE=app_instance_2
+      - ICOS_APP_COMPONENT=app_component_1
     networks:
       - continuum
 
   # Topology Exporter
-  topology_exporter:
-    image: icos/topology_exporter:2.0
+  topology-exporter:
+    image: icos/topology-exporter
     build: ..
     depends_on:
       zenoh:

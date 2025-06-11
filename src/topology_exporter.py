@@ -26,34 +26,45 @@ Topology Exporter
 
 # Importing necessary libraries
 import os
+import logging
 from threading import Thread, Event
 from aggregator_controller import poll
 import json
 from zenoh_client import send
 
 # Retrieving environment variables
+LOG_LEVEL = os.environ.get("LOG_LEVEL", "warning")
 INTERVAL = float(os.environ.get("INTERVAL", "10"))
+
+# Setting up logger
+logging.basicConfig(level=LOG_LEVEL.upper())
+logger = logging.getLogger(__name__)
 
 
 class TopologyExporter(Thread):
-    """Class to make periodic polls to the Aggregator and send through the Zenoh bus the location of the pods of each monitored application."""
+    """Class to make periodic polls to the Aggregator and send through the Zenoh bus
+    the deployment information of the pods of each monitored application."""
 
     def __init__(self):
         self._applications = {}
         self._end = Event()
         super().__init__()
 
-    def update_app(self, app_instance: str, app_components: list[str]):
+    def update_app(self, app_instance: str, application: dict):
         self._applications[app_instance] = {
-            app_component: {} for app_component in app_components
+            app_component: {"application": application["name"], "clusters": {}}
+            for app_component in application["components"]
         }
 
     def delete_app(self, app_instance: str):
         del self._applications[app_instance]
 
-    def list_apps(self) -> dict[str, list[str]]:
+    def list_apps(self) -> dict:
         return {
-            app_instance: list(app_components)
+            app_instance: {
+                "name": next(iter(app_components.values()))["application"],
+                "components": list(app_components),
+            }
             for app_instance, app_components in self._applications.items()
         }
 
@@ -61,8 +72,8 @@ class TopologyExporter(Thread):
         while not self._end.is_set():
             data = poll()
 
-            # print("Aggregator data:")
-            # print(data.model_dump_json(indent=2))
+            logger.debug("Aggregator data:")
+            logger.debug(data.model_dump_json(indent=2))
 
             for cluster_id, cluster in data.cluster.items():
                 for node_id, node in cluster.node.items():
@@ -71,15 +82,33 @@ class TopologyExporter(Thread):
                             if app_instance in self._applications:
                                 self._applications[app_instance][
                                     workload.icos_app_component
-                                ].setdefault(cluster_id, []).append(pod_id)
+                                ]["clusters"].setdefault(
+                                    cluster_id,
+                                    {"name": cluster.name, "pods": {}},
+                                )[
+                                    "pods"
+                                ][
+                                    pod_id
+                                ] = {
+                                    # pod.name = "app_instance__pod_name"
+                                    "name": pod.name[len(app_instance) + 2 :],
+                                    "ip": pod.ip,
+                                }
+                                if (
+                                    pod.name[len(app_instance) : len(app_instance) + 2]
+                                    != "__"
+                                ):
+                                    logger.warning(
+                                        f"The \"name\" of the pod {pod_id} in the Aggregator must follow the format: 'app_instance__pod_name'."
+                                    )
 
-            # print("Monitored application topologies:")
-            # print(json.dumps(self._applications, indent=2))
+            logger.debug("Monitored application topologies:")
+            logger.debug(json.dumps(self._applications, indent=2))
 
             for app_instance, app_components in self._applications.items():
-                for app_component, clusters in app_components.items():
-                    send(app_instance, app_component, clusters)
-                    clusters.clear()
+                for app_component, deployment in app_components.items():
+                    send(app_instance, app_component, deployment)
+                    deployment["clusters"].clear()
 
             self._end.wait(INTERVAL)
 

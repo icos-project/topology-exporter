@@ -168,7 +168,7 @@ check_outs 1.1 1.2 1.2 '' '' ''
 
 upd_header "Set topology only with application 1 component 1"
 setup_agg 1.1
-check_outs 1.1 0 0 '' '' ''
+check_outs 1.1 01 01 '' '' ''
 
 upd_header "Add replica 1 of application 1 component 2 to the topology"
 setup_agg 1-1

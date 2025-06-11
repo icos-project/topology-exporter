@@ -30,9 +30,6 @@ from fastapi import FastAPI
 import json
 from uvicorn import run
 
-# Retrieving environment variables
-JSON_FILE = os.environ.get("JSON_FILE", "aggregator.json")
-
 # Initializing FastAPI app
 app = FastAPI()
 
@@ -40,10 +37,10 @@ app = FastAPI()
 # Defining default route
 @app.get("/")
 async def default():
-    with open(JSON_FILE, "r") as file:
+    with open("aggregator.json", "r") as file:
         return json.load(file)
 
 
 # Running FastAPI app
 if __name__ == "__main__":
-    run(app=app, host="0.0.0.0")
+    run(app=app, host="0.0.0.0", log_level="warning")

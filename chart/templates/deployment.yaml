@@ -48,6 +48,10 @@ spec:
           - name: INTERVAL
             value: {{ tpl .Values.general.Interval . | quote }}
           {{- end }}
+          {{- if .Values.general.LogLevel }}
+          - name: LOG_LEVEL
+            value: {{ tpl .Values.general.LogLevel . | quote }}
+          {{- end }}
           {{- if .Values.general.AuthEnabled }}
           - name: AUTH_ENABLED
             value: {{ tpl .Values.general.AuthEnabled . | quote }}
@@ -90,7 +94,10 @@ spec:
             httpGet:
               path: /
               port: http
-          readinessProbe:
+            periodSeconds: 30
+          startupProbe:
             httpGet:
               path: /
               port: http
+            failureThreshold: 5
+            periodSeconds: 1

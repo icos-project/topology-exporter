@@ -31,7 +31,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials, SecurityS
 from pydantic import BaseModel, ValidationError
 import typing
 import yaml
-from topology_exporter import topology_exporter
+from topology_exporter import topology_exporter, LOG_LEVEL
 from uvicorn import run
 
 # Retrieving environment variables
@@ -119,10 +119,13 @@ async def update_application(app_instance: str, request: Request):
             detail=e.errors(include_url=False),
         )
 
-    app_components = [component.name for component in descriptor.components]
-    topology_exporter.update_app(app_instance, app_components)
+    application = {
+        "name": descriptor.name,
+        "components": [component.name for component in descriptor.components],
+    }
+    topology_exporter.update_app(app_instance, application)
 
-    return {app_instance: app_components}
+    return {app_instance: application}
 
 
 # Defining route to stop monitoring an application
@@ -151,6 +154,6 @@ async def list_applications():
 if __name__ == "__main__":
     topology_exporter.start()
 
-    run(app=app, host="0.0.0.0", port=80)
+    run(app=app, host="0.0.0.0", port=80, log_level=LOG_LEVEL)
 
     topology_exporter.stop()

@@ -1,5 +1,14 @@
 {
-    "cluster": [
-        "pod"
-    ]
+    "application": "app",
+    "clusters": {
+        "cluster_id": {
+            "name": "cluster_name",
+            "pods": {
+                "pod_id": {
+                    "name": "pod_name",
+                    "ip": "pod_ip"
+                }
+            }
+        }
+    }
 }

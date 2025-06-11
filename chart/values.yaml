@@ -39,11 +39,13 @@ securityContext: {}
 service:
   type: ClusterIP
   port: 80
+  # nodePort: 30800
 
 general:
   ZenohEP: <zenoh_endpoint>
   AggURL: <aggregator_url>
   Interval: "10"
+  LogLevel: "warning"
   AuthEnabled: "True"
 
 auth:

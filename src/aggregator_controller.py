@@ -15,7 +15,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 #
-#  This work has received funding from the European Union's HORIZON research 
+#  This work has received funding from the European Union's HORIZON research
 #  and innovation programme under grant agreement No. 101070177.
 #
 # -*- coding: utf-8 -*-
@@ -48,6 +48,8 @@ class AggWorkload(BaseModel):
 
 
 class AggPod(BaseModel):
+    name: str
+    ip: str
     workload: typing.Dict[str, OnErrorOmit[AggWorkload]]
 
 
@@ -56,6 +58,7 @@ class AggNode(BaseModel):
 
 
 class AggCluster(BaseModel):
+    name: str
     node: typing.Dict[str, OnErrorOmit[AggNode]]
 
 

@@ -1,10 +1,13 @@
 {
 	"cluster": {
-		"cluster": {
+		"cluster_id": {
+			"name": "cluster_name",
 			"node": {
-				"node": {
+				"node_name": {
 					"pod": {
-						"pod": {
+						"pod_id": {
+							"name": "app_instance__pod_name",
+							"ip": "pod_ip",
 							"workload": {
 								"app_instance": {
 									"icos_app_component": "app_component"
