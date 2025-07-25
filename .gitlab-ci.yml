@@ -7,7 +7,6 @@ include:
     file: '/pipelines/helm-chart.yaml'
 
 variables:
-  PH_DOCKER_KANIKO_IMAGE: gcr.io/kaniko-project/executor:v1.20.1-debug
   PH_HELM_CHART_FOLDER: chart
 
 documentation_website_trigger:

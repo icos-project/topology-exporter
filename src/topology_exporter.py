@@ -29,6 +29,7 @@ import os
 import logging
 from threading import Thread, Event
 from aggregator_controller import poll
+from requests.exceptions import ConnectionError, JSONDecodeError
 import json
 from zenoh_client import send
 
@@ -70,47 +71,55 @@ class TopologyExporter(Thread):
 
     def run(self):
         while not self._end.is_set():
-            data = poll()
+            try:
+                data = poll()
+            except ConnectionError:
+                logger.error("Aggregator is unreachable.")
+            except JSONDecodeError:
+                logger.error("Aggregator data is incorrectly formatted.")
+            else:
+                logger.debug("Aggregator data:\n" + data.model_dump_json(indent=2))
 
-            logger.debug("Aggregator data:")
-            logger.debug(data.model_dump_json(indent=2))
+                for cluster_id, cluster in data.cluster.items():
+                    for node_id, node in cluster.node.items():
+                        for pod_id, pod in node.pod.items():
+                            for app_instance, workload in pod.workload.items():
+                                if app_instance in self._applications:
+                                    self._applications[app_instance][
+                                        workload.icos_app_component
+                                    ]["clusters"].setdefault(
+                                        cluster_id,
+                                        {"name": cluster.name, "pods": {}},
+                                    )[
+                                        "pods"
+                                    ][
+                                        pod_id
+                                    ] = {
+                                        # pod.name = "app_instance__pod_name"
+                                        "name": pod.name[len(app_instance) + 2 :],
+                                        "ip": pod.ip,
+                                    }
+                                    if (
+                                        pod.name[
+                                            len(app_instance) : len(app_instance) + 2
+                                        ]
+                                        != "__"
+                                    ):
+                                        logger.warning(
+                                            f"The \"name\" of the pod {pod_id} in the Aggregator must follow the format: 'app_instance__pod_name'."
+                                        )
 
-            for cluster_id, cluster in data.cluster.items():
-                for node_id, node in cluster.node.items():
-                    for pod_id, pod in node.pod.items():
-                        for app_instance, workload in pod.workload.items():
-                            if app_instance in self._applications:
-                                self._applications[app_instance][
-                                    workload.icos_app_component
-                                ]["clusters"].setdefault(
-                                    cluster_id,
-                                    {"name": cluster.name, "pods": {}},
-                                )[
-                                    "pods"
-                                ][
-                                    pod_id
-                                ] = {
-                                    # pod.name = "app_instance__pod_name"
-                                    "name": pod.name[len(app_instance) + 2 :],
-                                    "ip": pod.ip,
-                                }
-                                if (
-                                    pod.name[len(app_instance) : len(app_instance) + 2]
-                                    != "__"
-                                ):
-                                    logger.warning(
-                                        f"The \"name\" of the pod {pod_id} in the Aggregator must follow the format: 'app_instance__pod_name'."
-                                    )
+                logger.debug(
+                    "Monitored application topologies:\n"
+                    + json.dumps(self._applications, indent=2)
+                )
 
-            logger.debug("Monitored application topologies:")
-            logger.debug(json.dumps(self._applications, indent=2))
-
-            for app_instance, app_components in self._applications.items():
-                for app_component, deployment in app_components.items():
-                    send(app_instance, app_component, deployment)
-                    deployment["clusters"].clear()
-
-            self._end.wait(INTERVAL)
+                for app_instance, app_components in self._applications.items():
+                    for app_component, deployment in app_components.items():
+                        send(app_instance, app_component, deployment)
+                        deployment["clusters"].clear()
+            finally:
+                self._end.wait(INTERVAL)
 
     def stop(self):
         self._end.set()

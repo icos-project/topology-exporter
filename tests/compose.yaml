@@ -106,6 +106,7 @@ services:
   topology-exporter:
     image: icos/topology-exporter
     build: ..
+    restart: always
     depends_on:
       zenoh:
         condition: service_started

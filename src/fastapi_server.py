@@ -75,7 +75,13 @@ async def user_authorization(
 # Defining route for health check
 @app.get("/")
 async def health_check():
-    return {"message": "Topology Exporter is working properly"}
+    if topology_exporter.is_alive():
+        return {"message": "Topology Exporter is up and running"}
+
+    raise HTTPException(
+        status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+        detail="Topology Exporter is down",
+    )
 
 
 # Defining models for application descriptor
@@ -136,7 +142,13 @@ async def update_application(app_instance: str, request: Request):
     ),
 )
 async def delete_application(app_instance: str):
-    topology_exporter.delete_app(app_instance)
+    try:
+        topology_exporter.delete_app(app_instance)
+    except KeyError as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=app_instance + " was not monitored",
+        )
 
 
 # Defining route to get current monitored applications
